@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="invoice using node">
+
+  <title>Invoice</title>
+
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/site.css">
+</head>
+
+<body>
+  <div id="main">
+    <h1>Generate Invoice</h1>
+    <form class="pure-form pure-form-aligned">
+      <div class="pure-control-group">
+        <label for="number">Invoice Number</label>
+        <input id="number" type="text" data-bind="textInput: number">
+      </div>
+      <div class="pure-control-group">
+        <label for="hours">Hours</label>
+        <input id="hours" type="text" data-bind="textInput: hours" placeholder="hours">
+      </div>
+      <div class="pure-control-group">
+        <label for="period">Period</label>
+        <input id="period" type="text" data-bind="textInput: period" placeholder="month and year">
+      </div>
+      <div class="pure-control-group">
+        <label for="rate">Rate</label>
+        <input id="rate" type="text" data-bind="textInput: rate">
+      </div>
+      <div class="pure-controls">
+        <button class="pure-button pure-button-primary" data-bind="click: generateClicked">Generate Invoice</button>
+      </div>
+    </form>
+  </div>
+  <script src="bundle.js"></script>
+</body>
+
+</html>

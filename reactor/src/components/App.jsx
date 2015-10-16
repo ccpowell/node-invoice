@@ -1,5 +1,6 @@
 import React from 'react';
 let moment = require('moment');
+import shortid from 'shortid';
 
 class App extends React.Component {
     constructor(props) {
@@ -15,21 +16,21 @@ class App extends React.Component {
         let info = {
             period: React.findDOMNode(this.refs.period).value,
             rate: React.findDOMNode(this.refs.rate).value,
-            hours: React.findDOMNode(this.refs.hours).value,
-            number: React.findDOMNode(this.refs.number).value
+            hours: React.findDOMNode(this.refs.hours).value
         };
 
-        this.props.generate(info);
+        let token = shortid.generate();
+        this.props.generateInvoice(token, info);
     }
 
     render() {
         let period = moment().add(-12, 'days').format('MMMM, YYYY');
 
         let message = null;
-        if (this.props.message) {
+        if (this.props.createdInvoice) {
             message = (
                 <div className="message">
-                    {this.props.message}
+                    {this.props.createdInvoice}
                 </div>
             );
         }
@@ -37,11 +38,6 @@ class App extends React.Component {
             <div>
                 <h1>Generate Invoice</h1>
                 <form className="pure-form pure-form-aligned">
-                    <div className="pure-control-group">
-                        <label htmlFor="number">Invoice Number</label>
-                        <input id="number" type="text" ref="number"
-                        defaultValue="2015-0"/>
-                    </div>
                     <div className="pure-control-group">
                         <label htmlFor="hours">Hours</label>
                         <input id="hours" type="text" ref="hours"

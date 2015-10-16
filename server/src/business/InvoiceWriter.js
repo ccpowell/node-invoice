@@ -4,31 +4,28 @@ let fs = Promise.promisifyAll(require('fs'));
 let _ = require('lodash');
 let path = require('path');
 
-export default function ({hours, rate, period, number}) {
-    hours = parseFloat(hours);
-    rate = parseFloat(rate);
+let top = 'f:\\tmp\\invoices';
 
-    if (!_.isFinite(hours)) {
-        return Promise.reject(new Error('hours must be positive number'));
-    }
+// get next invoice number.
+// files are named 2015-###.html
+function makeNextInvoiceNumber(files) {
+    let biggest = _.reduce(files, function (result, file) {
+        let m = file.match(/^2015-(\d\d\d)\.html$/i);
+        if (m && m.length > 1) {
+            let fileNumber = parseInt(m[1]);
+            if (fileNumber > result) {
+                result = fileNumber;
+            }
+        }
+        return result;
+    }, 0);
+    let number = biggest + 1;
+    number = _.padLeft(number, 3, '0');
+    return `2015-${number}`;
+}
 
-    if (!_.isFinite(rate)) {
-        return Promise.reject(new Error('rate must be positive number'));
-    }
-    if (!period) {
-        return Promise.reject(new Error('period must be a valid date range'));
-    }
+function formatInvoice({hours, rate, period, number}) {
 
-    if (!number) {
-        return Promise.reject(new Error('number must be a valid invoice number'));
-    }
-
-    let outputFile = path.join('c:\\tmp', `invoice-${number}.html`);
-    try {
-        fs.statSync(outputFile);
-        return Promise.reject(new Error('invoice already exists'));
-    } catch (err) {
-    }
     let charges = {
         hours: hours.toFixed(2),
         rate: '$' + `${rate}/hour`,
@@ -192,5 +189,31 @@ export default function ({hours, rate, period, number}) {
 
 </HTML>`;
 
-    return fs.writeFileAsync(outputFile, formatted);
+    return formatted;
+}
+
+export default function ({hours, rate, period}) {
+    hours = parseFloat(hours);
+    rate = parseFloat(rate);
+
+    if (!_.isFinite(hours)) {
+        return Promise.reject(new Error('hours must be positive number'));
+    }
+
+    if (!_.isFinite(rate)) {
+        return Promise.reject(new Error('rate must be positive number'));
+    }
+    if (!period) {
+        return Promise.reject(new Error('period must be a valid date range'));
+    }
+
+    let outputFile = null;
+    return fs.readdirAsync(top)
+        .then(files => makeNextInvoiceNumber(files))
+        .then(number => {
+            let formatted = formatInvoice({hours, rate, period, number});
+            outputFile  = path.join(top, number) + '.html';
+            return fs.writeFileAsync(outputFile, formatted);
+        })
+        .then(() => outputFile);
 }

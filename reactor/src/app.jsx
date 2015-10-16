@@ -1,6 +1,7 @@
 import * as React from 'react';
-import App from './components/App';
-let request = require('browser-request');
+import {Provider} from 'react-redux';
+import SmartApp from './reduxions/AppContainer';
+import store from './reduxions/Store';
 
 let el = document.getElementById('main');
 
@@ -15,7 +16,6 @@ let message = 'invoice generated';
     React.render((
             <App
                 message={message}
-                generate={generate}
             />
         ),
         el
@@ -32,9 +32,9 @@ function generate(data) {
 }
 
 React.render((
-        <App
-            generate={generate}
-        />
+        <Provider store={store}>
+            {() => <SmartApp />}
+        </Provider>
     ),
     el
 );

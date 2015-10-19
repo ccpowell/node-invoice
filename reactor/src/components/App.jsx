@@ -1,5 +1,6 @@
 import React from 'react';
 let moment = require('moment');
+let _ = require('lodash');
 import shortid from 'shortid';
 
 class App extends React.Component {
@@ -8,14 +9,32 @@ class App extends React.Component {
     this.bound = {
       generate: this.generate
         .bind(this)
-    }
+    };
+    this.weeks = App.weeks();
+  }
+
+  static weeks() {
+    let numberOfWeeks = 4;
+    var week = moment().startOf('week')
+      .add(-1, 'days')
+      .add(-numberOfWeeks, 'week');
+    var weeks = _
+      .map(_.range(numberOfWeeks), function(i) {
+        week.add(1, 'week');
+        return {
+          start: week.clone(),
+          end: week.clone()
+            .add(6, 'day')
+        };
+      });
+    return weeks;
   }
 
   generate(e) {
     e.preventDefault();
 
     let info = {
-      period: React.findDOMNode(this.refs.period)
+        period: React.findDOMNode(this.refs.period)
         .value,
       rate: React.findDOMNode(this.refs.rate)
         .value,
@@ -44,6 +63,27 @@ class App extends React.Component {
         </div>
       );
     }
+
+    let fmt = 'M/D/YYYY';
+
+    let periods = this.weeks
+      .map((week) => {
+        let start = week.start
+          .format(fmt);
+        let end = week.end
+          .format(fmt);
+        let period = start + ' - ' + end;
+        return period;
+      });
+
+    let periodOptions = periods.map((period) => {
+      return (
+        <option value={period} key={period}>
+          {period}
+        </option>
+      );
+    });
+
     return (
       <div>
         <h1>Generate Invoice</h1 >
@@ -54,7 +94,9 @@ class App extends React.Component {
           </div>
           <div className="pure-control-group">
             <label htmlFor="period">Period</label>
-            <input id="period" type="text" ref="period" defaultValue={period} placeholder="week"/>
+            <select id="period" ref="period" defaultValue={periods[2]}>
+              {periodOptions}
+            </select>
           </div>
           <div className="pure-control-group">
             <label htmlFor="rate">Rate</label>

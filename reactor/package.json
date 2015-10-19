@@ -20,6 +20,7 @@
     "gulp": "^3.9.0",
     "gulp-stylus": "^2.1.0",
     "immutable": "^3.7.5",
+    "lodash": "^3.10.1",
     "moment": "^2.10.6",
     "react": "^0.13.3",
     "react-redux": "^3.1.0",

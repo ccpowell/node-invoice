@@ -44,17 +44,17 @@ function formatInvoice({
     zip: 'zip'
   };
 
-  let now = new Date();
-  let due = new Date(now.valueOf());
-  due.setDate(due.getDate() + 15);
+  let now = moment().startOf('day');
+  let due = now.clone().add(15, 'day');
 
   let invoice = {
-    date: moment(now).format('MMM DD, YYYY'),
-    due: moment(due).format('MMM DD, YYYY'),
+    date: now.format('MMM DD, YYYY'),
+    due: due.format('MMM DD, YYYY'),
     number: number
   };
 
   let formatted = `
+<!DOCTYPE html>
 <HTML>
 <HEAD>
   <TITLE>Invoice</TITLE>

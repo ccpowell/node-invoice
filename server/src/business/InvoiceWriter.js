@@ -4,55 +4,57 @@ let fs = Promise.promisifyAll(require('fs'));
 let _ = require('lodash');
 let path = require('path');
 
-let top = 'f:\\tmp\\invoices';
+let top = 'C:\\SlowData\\invoices';
 
 // get next invoice number.
 // files are named 2015-###.html
 function makeNextInvoiceNumber(files) {
-    let biggest = _.reduce(files, function (result, file) {
-        let m = file.match(/^2015-(\d\d\d)\.html$/i);
-        if (m && m.length > 1) {
-            let fileNumber = parseInt(m[1]);
-            if (fileNumber > result) {
-                result = fileNumber;
-            }
-        }
-        return result;
-    }, 0);
-    let number = biggest + 1;
-    number = _.padLeft(number, 3, '0');
-    return `2015-${number}`;
+  let biggest = _.reduce(files, function(result, file) {
+    let m = file.match(/^2015-(\d\d\d)\.html$/i);
+    if (m && m.length > 1) {
+      let fileNumber = parseInt(m[1]);
+      if (fileNumber > result) {
+        result = fileNumber;
+      }
+    }
+    return result;
+  }, 0);
+  let number = biggest + 1;
+  number = _.padLeft(number, 3, '0');
+  return `2015-${number}`;
 }
 
-function formatInvoice({hours, rate, period, number}) {
+function formatInvoice({
+  hours, rate, period, number
+}) {
 
-    let charges = {
-        hours: hours.toFixed(2),
-        rate: '$' + `${rate}/hour`,
-        period: period,
-        total: '$' + (hours * rate).toFixed(2)
-    };
+  let charges = {
+    hours: hours.toFixed(2),
+    rate: '$' + `${rate}/hour`,
+    period: period,
+    total: '$' + (hours * rate).toFixed(2)
+  };
 
-    let customer = {
-        name: 'Customer',
-        address1: 'address1',
-        address2: 'address2',
-        city: 'city',
-        state: 'state',
-        zip: 'zip'
-    };
+  let customer = {
+    name: 'Customer',
+    address1: 'address1',
+    address2: 'address2',
+    city: 'city',
+    state: 'state',
+    zip: 'zip'
+  };
 
-    let now = new Date();
-    let due = new Date(now.valueOf());
-    due.setDate(due.getDate() + 15);
+  let now = new Date();
+  let due = new Date(now.valueOf());
+  due.setDate(due.getDate() + 15);
 
-    let invoice = {
-        date: moment(now).format('MMM DD, YYYY'),
-        due: moment(due).format('MMM DD, YYYY'),
-        number: number
-    };
+  let invoice = {
+    date: moment(now).format('MMM DD, YYYY'),
+    due: moment(due).format('MMM DD, YYYY'),
+    number: number
+  };
 
-    let formatted = `
+  let formatted = `
 <HTML>
 <HEAD>
   <TITLE>Invoice</TITLE>
@@ -189,31 +191,39 @@ function formatInvoice({hours, rate, period, number}) {
 
 </HTML>`;
 
-    return formatted;
+  return formatted;
 }
 
-export default function ({hours, rate, period}) {
-    hours = parseFloat(hours);
-    rate = parseFloat(rate);
+export default function({
+  hours, rate, period
+}) {
+  hours = parseFloat(hours);
+  rate = parseFloat(rate);
 
-    if (!_.isFinite(hours)) {
-        return Promise.reject(new Error('hours must be positive number'));
-    }
+  if (!_.isFinite(hours)) {
+    return Promise.reject(new Error('hours must be positive number'));
+  }
 
-    if (!_.isFinite(rate)) {
-        return Promise.reject(new Error('rate must be positive number'));
-    }
-    if (!period) {
-        return Promise.reject(new Error('period must be a valid date range'));
-    }
-
-    let outputFile = null;
-    return fs.readdirAsync(top)
-        .then(files => makeNextInvoiceNumber(files))
-        .then(number => {
-            let formatted = formatInvoice({hours, rate, period, number});
-            outputFile  = path.join(top, number) + '.html';
-            return fs.writeFileAsync(outputFile, formatted);
-        })
-        .then(() => outputFile);
+  if (!_.isFinite(rate)) {
+    return Promise.reject(new Error('rate must be positive number'));
+  }
+  if (!period) {
+    return Promise.reject(new Error('period must be a valid date range'));
+  }
+  let outputFile = null;
+  let invoiceName = null;
+  return fs.readdirAsync(top)
+    .then(files => makeNextInvoiceNumber(files))
+    .then(number => {
+      let formatted = formatInvoice({
+        hours, rate, period, number
+      });
+      invoiceName = number + '.html';
+      outputFile = path.join(top, invoiceName);
+      return fs.writeFileAsync(outputFile, formatted);
+    })
+    .then(() => ({
+      invoice: invoiceName,
+      path: outputFile
+    }));
 }

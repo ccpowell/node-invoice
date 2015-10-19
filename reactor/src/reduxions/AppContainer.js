@@ -11,7 +11,8 @@ import * as actions from './ActionCreators';
 function mapStateToProps(state) {
     return {
         isAsyncInProgress: (state.get('asyncInProgress').size > 0),
-        createdInvoice: state.get('createdInvoice')
+        createdInvoice: state.get('createdInvoice'),
+        createdInvoicePath: state.get('createdInvoicePath')
     };
 }
 

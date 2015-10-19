@@ -32,6 +32,7 @@ function reducer(state, action) {
         case Constants.Actions.InvoiceGenerated:
             // set message to invoice name
             state = state.update('createdInvoice', s => action.payload.invoice);
+            state = state.update('createdInvoicePath', s => action.payload.path);
             // remove action with token form asyncInProgress
             return state.update('asyncInProgress', s => s.delete(action.token));
             break;
@@ -46,7 +47,8 @@ function reducer(state, action) {
 
 let initialState = Immutable.Map({
     asyncInProgress: Immutable.Set(),
-    createdInvoice: null
+    createdInvoice: null,
+    createdInvoicePath: null
 });
 
 const loggerMiddleware = createLogger();
@@ -59,4 +61,3 @@ const createStoreWithMiddleware = applyMiddleware(
 // Store
 let store = createStoreWithMiddleware(reducer, initialState);
 export {store as default};
-

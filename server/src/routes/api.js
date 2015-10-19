@@ -15,7 +15,7 @@ router.post('/invoice', function (req, res) {
     console.log(req.body);
 
     writeInvoice({hours, rate, period})
-        .then((outputFile) => res.status(200).json({invoice: outputFile}))
+        .then((invoice) => res.status(200).json(invoice))
         .catch((err) => res.status(500).send({error: err.toString()}));
 });
 

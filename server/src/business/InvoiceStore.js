@@ -66,6 +66,11 @@ class InvoiceStore {
       });
   }
 
+  createDummyInvoice(number) {
+    let doc = new InvoiceDoc({number});
+    return doc.save();
+  }
+
   createCustomer(customer) {
     let doc = new CustomerDoc(customer);
     return doc.save();

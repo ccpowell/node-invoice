@@ -46,7 +46,7 @@ class App extends React.Component {
     let week = this.weeks[periodIndex];
 
     let info = {
-      customerId: '5626cfe6a8786c70226d8816',
+      customerId: '56291320fda175940cbae558',
       periodStart: momentToPeriod(week.start),
       periodEnd: momentToPeriod(week.end),
       rate: React.findDOMNode(this.refs.rate)

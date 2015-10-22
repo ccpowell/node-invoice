@@ -1,5 +1,5 @@
 var store = require('../dist/business/InvoiceStore');
-store.createCustomer({
+store.createInvoice({
   name: 'Staff IQ',
   address1: 'address1',
   address2: 'address2',

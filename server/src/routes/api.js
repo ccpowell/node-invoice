@@ -10,11 +10,14 @@ router.use(parser.json());
 
 router.post('/invoice', function (req, res) {
     let {
-        rate, hours, period
+        rate, hours, periodStart, periodEnd, customerId
         } = req.body;
-    console.log(req.body);
+        let invoiceData = {
+      rate, hours, periodStart, periodEnd, customerId
+    }
+    console.log(invoiceData);
 
-    writeInvoice({hours, rate, period})
+    writeInvoice(invoiceData)
         .then((invoice) => res.status(200).json(invoice))
         .catch((err) => res.status(500).send({error: err.toString()}));
 });

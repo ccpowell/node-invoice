@@ -3,6 +3,14 @@ let moment = require('moment');
 let _ = require('lodash');
 import shortid from 'shortid';
 
+function momentToPeriod(mom) {
+  return {
+    year: mom.year(),
+    month: mom.month(),
+    date: mom.date()
+  };
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -33,9 +41,14 @@ class App extends React.Component {
   generate(e) {
     e.preventDefault();
 
+    let periodIndex = React.findDOMNode(this.refs.period)
+      .value;
+    let week = this.weeks[periodIndex];
+
     let info = {
-        period: React.findDOMNode(this.refs.period)
-        .value,
+      customerId: '5626cfe6a8786c70226d8816',
+      periodStart: momentToPeriod(week.start),
+      periodEnd: momentToPeriod(week.end),
       rate: React.findDOMNode(this.refs.rate)
         .value,
       hours: React.findDOMNode(this.refs.hours)
@@ -76,9 +89,9 @@ class App extends React.Component {
         return period;
       });
 
-    let periodOptions = periods.map((period) => {
+    let periodOptions = periods.map((period, index) => {
       return (
-        <option value={period} key={period}>
+        <option value={index} key={index}>
           {period}
         </option>
       );

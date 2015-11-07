@@ -1,5 +1,5 @@
 // weekly invoice
-// Does latest saturday - friday
+// Does latest sunday - saturday
 // uses Staff IQ and default rate
 // requires number of hours as an argument
 var moment = require('moment');
@@ -12,7 +12,7 @@ var rate = 73;
 
 // find the latest week that is completely past
 function getLatestWeek() {
-  let start = moment().startOf('week').add(-1, 'days');
+  let start = moment().startOf('week');
   let end = start.clone().add(6, 'day');
   let today = moment().startOf('day');
   while (today.isBefore(end)) {

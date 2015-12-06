@@ -203,7 +203,7 @@ export default function({hours, rate, customerId, periodStart, periodEnd}) {
               periodEnd,
               customerId: customer.id
           };
-          return invoices.createInvoice(invoice);
+          return invoices.createNextWeeklyInvoice(invoice);
       })
       .then(invoice => {
           let formatted = formatInvoice(invoice, customer);

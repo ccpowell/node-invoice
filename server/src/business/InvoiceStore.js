@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import mongoose from './MongoDb';
+let moment = require('moment');
 
 // N.B.
 /*
@@ -54,18 +55,37 @@ let customerSchema = mongoose.Schema({
 });
 let CustomerDoc = mongoose.model('Customer', customerSchema);
 
+function momentToPeriod(mom) {
+    return {
+        year: mom.year(),
+        month: mom.month(),
+        date: mom.date()
+    };
+}
+
 class InvoiceStore {
-    createInvoice(invoice) {
-        console.log(invoice);
+    createNextWeeklyInvoice(invoice) {
         let doc = new InvoiceDoc(invoice);
-        // get next invoice number
+        // get latest invoice 
+        // use it to create start and end dates
+        // add todays date 
         return InvoiceDoc.findOne()
           .sort('-number')
           .exec()
           .then(biggest => {
               doc.number = biggest ? biggest.number + 1 : 1;
+              doc.periodStart = momentToPeriod(moment(biggest.periodStart).add(1, 'week'));
+              doc.periodEnd = momentToPeriod(moment(biggest.periodEnd).add(1, 'week'));
+              doc.date = momentToPeriod(moment());
+              doc.due = momentToPeriod(moment().add(15, 'day'));
               return doc.save();
           });
+    }
+
+    getLastWeekly(customerId) {
+        return InvoiceDoc.findOne()
+          .sort('-number')
+          .exec();
     }
 
     createDummyInvoice(number) {

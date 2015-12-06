@@ -5,26 +5,26 @@ let _ = require('lodash');
 let path = require('path');
 let invoices = require('./InvoiceStore');
 
-let top = 'C:\\SlowData\\invoices';
+let top = 'C:\\Users\\chris\\OneDrive\\Business\\2015';
 
 function formatInvoice(invoice, customer) {
-  let period = moment(invoice.periodStart).format('MMM DD, YYYY') + ' - ' +
-    moment(invoice.periodEnd).format('MMM DD, YYYY');
+    let period = moment(invoice.periodStart).format('MMM DD, YYYY') + ' - ' +
+      moment(invoice.periodEnd).format('MMM DD, YYYY');
 
-  let charges = {
-    hours: invoice.hours.toFixed(2),
-    rate: '$' + `${invoice.rate}/hour`,
-    period: period,
-    total: '$' + (invoice.hours * invoice.rate).toFixed(2)
-  };
+    let charges = {
+        hours: invoice.hours.toFixed(2),
+        rate: '$' + `${invoice.rate}/hour`,
+        period: period,
+        total: '$' + (invoice.hours * invoice.rate).toFixed(2)
+    };
 
-  let pretty = {
-    date: moment(invoice.date).format('MMM DD, YYYY'),
-    due: moment(invoice.due).format('MMM DD, YYYY'),
-    number: '2015-' + _.padLeft(invoice.number.toString(), 3, '0')
-  };
+    let pretty = {
+        date: moment(invoice.date).format('MMM DD, YYYY'),
+        due: moment(invoice.due).format('MMM DD, YYYY'),
+        number: '2015-' + _.padLeft(invoice.number.toString(), 3, '0')
+    };
 
-  let formatted = `
+    let formatted = `
 <!DOCTYPE html>
 <HTML>
 <HEAD>
@@ -162,62 +162,60 @@ function formatInvoice(invoice, customer) {
 
 </HTML>`;
 
-  return formatted;
+    return formatted;
 }
 
 function momentToPeriod(mom) {
-  return {
-    year: mom.year(),
-    month: mom.month(),
-    date: mom.date()
-  };
+    return {
+        year: mom.year(),
+        month: mom.month(),
+        date: mom.date()
+    };
 }
 
-export default function({
-  hours, rate, customerId, periodStart, periodEnd
-}) {
-  hours = parseFloat(hours);
-  rate = parseFloat(rate);
-  let date = moment().startOf('day');
-  let outputFile = null;
-  let invoiceName = null;
-  let customer = null;
+export default function({hours, rate, customerId, periodStart, periodEnd}) {
+    hours = parseFloat(hours);
+    rate = parseFloat(rate);
+    let date = moment().startOf('day');
+    let outputFile = null;
+    let invoiceName = null;
+    let customer = null;
 
-  if (!_.isFinite(hours)) {
-    return Promise.reject(new Error('hours must be positive number'));
-  }
+    if (!_.isFinite(hours)) {
+        return Promise.reject(new Error('hours must be positive number'));
+    }
 
-  if (!_.isFinite(rate)) {
-    return Promise.reject(new Error('rate must be positive number'));
-  }
+    if (!_.isFinite(rate)) {
+        return Promise.reject(new Error('rate must be positive number'));
+    }
 
-  // get customer
-  return invoices.getCustomerById(customerId)
-    .then(c => {
-      // save it for later
-      customer = c;
-      let invoice = {
-        hours,
-        rate,
-        date: momentToPeriod(moment()),
-          due: momentToPeriod(moment().add(15, 'day')),
-          periodStart,
-          periodEnd,
-          customerId: customer.id
-      };
-      return invoices.createInvoice(invoice);
-    })
-    .then(invoice => {
-      let formatted = formatInvoice(invoice, customer);
-      let number = _.padLeft(invoice.number.toString(), 3, '0');
-      invoiceName = invoice.date.year.toString() + '-' + number + '.html';
-      outputFile = path.join(top, invoiceName);
-      return fs.writeFileAsync(outputFile, formatted);
-    })
-    .then(() => {
-      return {
-        invoice: invoiceName,
-        path: outputFile
-      };
-    });
+    // get customer
+    return invoices.getCustomerById(customerId)
+      .then(c => {
+          // save it for later
+          customer = c;
+          let invoice = {
+              hours,
+              rate,
+              date: momentToPeriod(moment()),
+              due: momentToPeriod(moment().add(15, 'day')),
+              periodStart,
+              periodEnd,
+              customerId: customer.id
+          };
+          return invoices.createInvoice(invoice);
+      })
+      .then(invoice => {
+          let formatted = formatInvoice(invoice, customer);
+          let number = _.padLeft(invoice.number.toString(), 3, '0');
+          invoiceName = invoice.date.year.toString() + '-' + number + '.html';
+          outputFile = path.join(top, invoiceName);
+          return fs.writeFileAsync(outputFile, formatted);
+      })
+      .then(() => {
+          return {
+              invoice: invoiceName,
+              path: outputFile
+          };
+      });
 }

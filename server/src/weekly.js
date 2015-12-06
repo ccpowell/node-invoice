@@ -20,8 +20,8 @@ function getLatestWeek() {
     end.add(-1, 'week');
   }
   return {
-    start: start.toObject(),
-    end: end.toObject()
+      start: { year: start.year(), month: start.month(), date: start.date() },
+      end: { year: end.year(), month: end.month(), date: end.date() }
   };
 }
 

@@ -173,7 +173,7 @@ function momentToPeriod(mom) {
     };
 }
 
-export default function({hours, rate, customerId, periodStart, periodEnd}) {
+export default function({hours, rate, customerId}) {
     hours = parseFloat(hours);
     rate = parseFloat(rate);
     let date = moment().startOf('day');
@@ -197,10 +197,6 @@ export default function({hours, rate, customerId, periodStart, periodEnd}) {
           let invoice = {
               hours,
               rate,
-              date: momentToPeriod(moment()),
-              due: momentToPeriod(moment().add(15, 'day')),
-              periodStart,
-              periodEnd,
               customerId: customer.id
           };
           return invoices.createNextWeeklyInvoice(invoice);
